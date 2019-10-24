@@ -20,16 +20,25 @@ public class Main {
     private static File getRootFolder() {
         try {
             File root;
+            
             String runningJarPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
+            
+            System.out.println(runningJarPath);
+            
             int lastIndexOf = runningJarPath.lastIndexOf("/target/");
+            
             if (lastIndexOf < 0) {
                 root = new File("");
-            } else {
+            } 
+            else {
                 root = new File(runningJarPath.substring(0, lastIndexOf));
             }
+            
             System.out.println("application resolved root folder: " + root.getAbsolutePath());
+            
             return root;
-        } catch (URISyntaxException ex) {
+        } 
+        catch (URISyntaxException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -38,8 +47,10 @@ public class Main {
 
         File root = getRootFolder();
         System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
-        Tomcat tomcat = new Tomcat();
+        
         Path tempPath = Files.createTempDirectory("tomcat-base-dir");
+
+        Tomcat tomcat = new Tomcat();
         tomcat.setBaseDir(tempPath.toString());
 
         //The port that we should run on can be set into an environment variable
@@ -50,6 +61,7 @@ public class Main {
         }
 
         tomcat.setPort(Integer.valueOf(webPort));
+        
         File webContentFolder = new File(root.getAbsolutePath(), "src/main/webapp/");
         if (!webContentFolder.exists()) {
             webContentFolder = Files.createTempDirectory("default-doc-base").toFile();
@@ -69,7 +81,8 @@ public class Main {
         if (additionWebInfClassesFolder.exists()) {
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClassesFolder.getAbsolutePath(), "/");
             System.out.println("loading WEB-INF resources from as '" + additionWebInfClassesFolder.getAbsolutePath() + "'");
-        } else {
+        } 
+        else {
             resourceSet = new EmptyResourceSet(resources);
         }
         resources.addPreResources(resourceSet);
